@@ -1,0 +1,51 @@
+import { useState } from "react";
+import { useNavigate, Link } from "react-router-dom";
+import api from "../service/api";
+
+export default function Register() {
+    const [nomUser, setNomUser] = useState("");
+    const [mailUser, setMailUser] = useState("");
+    const [password, setPassword] = useState("");
+    const [message, setMessage] = useState("");
+    const navigate = useNavigate();
+
+    const handleRegister = async (e) => {
+        e.preventDefault();
+        try {
+            await api.post("/auth/register", { nomUser, mailUser, password });
+            setMessage("Inscription reussie! Vous pouvez maintenant vous connecter.");
+            //redirection vers la page de connexion apres 2s
+            // setTimeout(() => navigate("/login"), 2000);
+        } catch (err) {
+            const serverMsg = err?.response?.data?.error || err?.message;
+            setMessage(`Erreur lors de l'inscription: ${serverMsg}`);
+        }
+    };
+
+    return (
+        <div style={{ display: "flex", justifyContent: "center", alignItems: "center", margin: "auto", maxWidth: "400px" }}>
+            <h2>Inscription</h2>
+            <form onSubmit={handleRegister} style={{ display: "flex", flexDirection: "column", width: "100%" }}>
+                <div style={{ marginBottom: "1rem" }}>
+                    <label>Nom</label>
+                    <input type="text" value={nomUser} onChange={(e) => setNomUser(e.target.value)} required style={{ width: "100%", padding: "0.5rem" }}/>
+                </div>
+                <div style={{ marginBottom: "1rem" }}>
+                    <label>Email</label>
+                    <input type="email" value={mailUser} onChange={(e) => setMailUser(e.target.value)} required style={{ width: "100%", padding: "0.5rem" }}/>
+                </div>
+                <div style={{ marginBottom: "1rem" }}>
+                    <label>Mot de passe</label>
+                    <input type="password" value={password} onChange={(e) => setPassword(e.target.value)} required style={{ width: "100%", padding: "0.5rem" }} minLength={10} placeholder="minimum 10"/>
+                </div>
+                <button type="submit" style={{ padding: "0.7rem", width: "100%" }}>S'inscrire</button>
+                { /*lien vers la page de connexion */}
+                <p style={{ marginTop: "1rem" }}>Déjà un compte? 
+                    <Link to="/login">Se connecter</Link>
+                </p>
+                {message && <p style={{ marginTop: "1rem" }}>{message}</p>}
+            </form>
+                
+        </div>
+    )
+}
