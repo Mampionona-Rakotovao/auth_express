@@ -1,4 +1,4 @@
-import { useState  } from "react";
+import { useEffect, useState  } from "react";
 import { useNavigate, Link } from "react-router-dom";
 import api from "../service/api";
 import "./login.css";
@@ -11,6 +11,12 @@ export default function Login() {
     const [isLoading, setIsLoading] = useState(false);
     const navigate = useNavigate();
 
+    useEffect(() => {
+        const token = localStorage.getItem("token");
+        if (token) {
+            navigate("/");
+        }
+    },[]);
     const handleLogin = async (e) => {
         e.preventDefault();
         setMessage("");
